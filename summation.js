@@ -1,6 +1,7 @@
 const createMemory = require('./create-memory');
 const CPU = require('./cpu');
 const instructions = require('./instructions');
+const readline = require('readline');
 
 const IP = 0;
 const ACC = 1;
@@ -14,14 +15,14 @@ const cpu = new CPU(memory);
 
 let i=0;
 
-writableBytes[i++] = instructions.MOV_LIT_REG;
-writableBytes[i++] = 0x12 //0x1234
-writableBytes[i++] = 0x34;
+writableBytes[i++] = instructions.MOV_MEM_REG;
+writableBytes[i++] = 0x01;
+writableBytes[i++] = 0x00;
 writableBytes[i++] = R1;
 
 writableBytes[i++] = instructions.MOV_LIT_REG;
-writableBytes[i++] = 0xAB; //0xABCD
-writableBytes[i++] = 0xCD;
+writableBytes[i++] = 0x00; 
+writableBytes[i++] = 0x01;
 writableBytes[i++] = R2;
 
 writableBytes[i++] = instructions.ADD_REG_REG;
@@ -33,26 +34,25 @@ writableBytes[i++] = ACC;
 writableBytes[i++] = 0x01; 
 writableBytes[i++] = 0x00; 
 
+writableBytes[i++] = instructions.JMP_NOT_EQ;
+writableBytes[i++] = 0x00; 
+writableBytes[i++] = 0x03; 
+writableBytes[i++] = 0x00; 
+writableBytes[i++] = 0x00; 
+
 cpu.debug();
 cpu.viewMemoryAt(cpu.getRegister('ip'));
 cpu.viewMemoryAt(0x0100);
 
-cpu.step();
-cpu.debug();
-cpu.viewMemoryAt(cpu.getRegister('ip'));
-cpu.viewMemoryAt(0x0100);
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-cpu.step();
-cpu.debug();
-cpu.viewMemoryAt(cpu.getRegister('ip'));
-cpu.viewMemoryAt(0x0100);
+rl.on('line', () => {
+    cpu.step();
+    cpu.debug();
+    cpu.viewMemoryAt(cpu.getRegister('ip'));
+    cpu.viewMemoryAt(0x0100);
+});
 
-cpu.step();
-cpu.debug();
-cpu.viewMemoryAt(cpu.getRegister('ip'));
-cpu.viewMemoryAt(0x0100);
-
-cpu.step();
-cpu.debug();
-cpu.viewMemoryAt(cpu.getRegister('ip'));
-cpu.viewMemoryAt(0x0100);
